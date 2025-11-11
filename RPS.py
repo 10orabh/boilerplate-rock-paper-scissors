@@ -1,45 +1,32 @@
-# The example function below keeps track of the opponent's history and plays whatever the opponent played two plays ago. It is not a very good player so you will need to change the code to pass the challenge.
-
 import random
-# from RPS_game import play, mrugesh, abbey, quincy, kris, human, random_player
 
-def player(prev_play, opponent_history=[],order=[{
-    "RR": 0,
-    "RP": 0,
-    "RS": 0,
-    "PR": 0,
-    "PP": 0,
-    "PS": 0,
-    "SR": 0,
-    "SP": 0,
-    "SS": 0,
-}]):
-    if prev_play == '':
-        prev_play = 'R'
+def player(prev_play, opponent_history=[], order={}):
+    if prev_play == "":
+        prev_play = "R"
+
     opponent_history.append(prev_play)
-    right_move = {'P': 'S', 'R': 'P', 'S': 'R'}
-    preds = []
-    
-    if len(opponent_history) > 2:
-    # extract last two values 
-        last_pair = ''.join(opponent_history[-2:])
-        order[0][last_pair] += 1
-        possibility = {
-            prev_play + "R" : 0,
-            prev_play + "S" : 0 ,
-            prev_play + "P" : 0 ,}
-
-        for p in possibility:
-            if p in order[0]:
-                possibility[p] = order[0][p]
-        pred = max(possibility,key=possibility.get)
-        preds.append(pred[-1])
-        return right_move[pred[-1]]
-
-
-
 
     
-    
+    if len(opponent_history) < 3:
+        return random.choice(["R", "P", "S"])
 
-    # return guess
+    
+    last_three = "".join(opponent_history[-3:])
+    if last_three not in order:
+        order[last_three] = {"R": 0, "P": 0, "S": 0}
+
+    
+    if len(opponent_history) > 3:
+        prev_seq = "".join(opponent_history[-4:-1])
+        next_move = opponent_history[-1]
+        if prev_seq not in order:
+            order[prev_seq] = {"R": 0, "P": 0, "S": 0}
+        order[prev_seq][next_move] += 1
+
+    
+    options = order.get(last_three, {"R": 0, "P": 0, "S": 0})
+    predicted = max(options, key=options.get)
+
+    
+    counter = {"R": "P", "P": "S", "S": "R"}
+    return counter[predicted]
